@@ -1,0 +1,57 @@
+# ===================== 多场景Agent配置文件 =====================
+# 说明：
+# - id: 场景唯一标识（英文，用于代码调用）
+# - name: 场景显示名称（中文，用于前端展示）
+# - description: 场景描述
+# - collection_name: Chroma向量库集合名称（不同场景必须不同，实现知识隔离）
+# - data_path: 知识库文件存放目录（不同场景必须不同）
+# - tools: （可选）该场景启用的工具列表，不填则启用所有工具
+
+scenes:
+  # 场景1：智扫通客服（你的原有场景）
+  - id: zhisaotong
+    name: 智扫通客服
+    description: 设备使用、故障排查、知识库检索智能客服
+    collection_name: zhisaotong_knowledge_base
+    data_path: data/zhisaotong
+    tools:
+      - rag_summarize
+      - get_weather
+      - get_user_location
+      - get_user_id
+      - get_current_month
+      - fetch_external_data
+      - fill_context_for_report
+
+  # 场景2：电商售后客服
+  - id: ecommerce
+    name: 电商售后客服
+    description: 订单查询、退换货、产品使用、保修政策智能客服
+    collection_name: ecommerce_knowledge_base
+    data_path: data/ecommerce
+    tools:
+      - rag_summarize
+      - get_user_id
+      - fetch_external_data
+
+  # 场景3：企业HR助手
+  - id: hr
+    name: 企业HR助手
+    description: 员工入职、考勤、薪酬、团建、人事制度智能助手
+    collection_name: hr_knowledge_base
+    data_path: data/hr
+    tools:
+      - rag_summarize
+      - get_current_month
+      - fetch_external_data
+
+  # 场景4：园区物业客服
+  - id: property
+    name: 园区物业客服
+    description: 业主报修、物业费、停车、园区公告智能客服
+    collection_name: property_knowledge_base
+    data_path: data/property
+    tools:
+      - rag_summarize
+      - get_weather
+      - get_user_location
