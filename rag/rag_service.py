@@ -1,13 +1,20 @@
 """
-总结服务类：用户提问，搜索参考资料，将提问和参考资料提交给模型，让模型总结回复
+总结服务类：用户提问，搜索参考资料，将提问和参考资料提交给模型，让模型总结回复。
+
+RAG 层负责两件事：
+1. 将检索结果格式化为带编号的可引用证据；
+2. 在没有任何证据时提前拒答，避免模型脱离知识库自由发挥。
 """
+from typing import Dict, Optional
+
 from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import PromptTemplate
+
+from model.factory import chat_model
 from rag.vector_store import VectorStoreService
 from utils.prompt_loader import load_rag_prompts
-from langchain_core.prompts import PromptTemplate
-from model.factory import chat_model
-from typing import Optional, Dict
+from utils.rag_formatting import NO_EVIDENCE_RESPONSE, format_rag_context
 
 
 def print_prompt(prompt):
@@ -45,17 +52,16 @@ class RagSummarizeService(object):
 
     def rag_summarize(self, query: str) -> str:
         context_docs = self.retriever_docs(query)
+        context = format_rag_context(context_docs)
 
-        context = ""
-        counter = 0
-        for doc in context_docs:
-            counter += 1
-            context += f"【参考资料{counter}】: 参考资料：{doc.page_content} | 参考元数据：{doc.metadata}\n"
+        if not context:
+            return NO_EVIDENCE_RESPONSE
 
         return self.chain.invoke(
             {
                 "input": query,
                 "context": context,
+                "no_evidence_response": NO_EVIDENCE_RESPONSE,
             }
         )
 

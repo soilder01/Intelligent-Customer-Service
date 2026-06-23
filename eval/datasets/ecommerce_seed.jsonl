@@ -1,0 +1,5 @@
+{"scene":"ecommerce","query":"网购商品七日无理由退货从哪一天开始计算？","expected_keywords":["签收","次日","七日"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"ecommerce","query":"申请退货后商家应提供哪些退货信息？","expected_keywords":["退货地址","联系人","联系电话"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"ecommerce","query":"三星商城商品出现质量问题时退换货和保修的大致规则是什么？","expected_keywords":["7天","15天","保修","发票"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"ecommerce","query":"没有发票是否一定不能申请售后？","expected_keywords":["发票","退换货","保修","渠道"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"ecommerce","query":"消费者选择无理由退货时需要保留什么？","expected_keywords":["退货凭证","退回商品"],"source_hint":"public_knowledge_seed.txt"}

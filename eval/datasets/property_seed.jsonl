@@ -1,0 +1,5 @@
+{"scene":"property","query":"物业费通常包含哪些共用设施相关服务？","expected_keywords":["道路","绿地","停车设施","消防设施"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"property","query":"如果物业服务存在重大瑕疵，业主可以主张什么？","expected_keywords":["减免","赔偿","重大瑕疵"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"property","query":"小区门禁损坏长期未修导致财物被盗，物业责任如何判断？","expected_keywords":["安全保障","管理不到位","减免物业费"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"property","query":"物业服务用房、路灯、排水设施是否属于共用设施范围？","expected_keywords":["共用设施","路灯","排水","物业服务用房"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"property","query":"物业费争议回答时应提醒用户注意什么？","expected_keywords":["合同","法律法规","证据","物业服务"],"source_hint":"public_knowledge_seed.txt"}

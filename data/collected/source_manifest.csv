@@ -1,0 +1,14 @@
+scene,title,url,kind,chars,status
+zhisaotong,科沃斯常见问题解决,https://www.ecovacs.cn/pure-question-21994.html,public_web,1065,success
+zhisaotong,HIZERO F580S 常见问题,https://www.hizero.cn/help/faq/f500/,public_web,2745,success
+zhisaotong,HIZERO F100 常见问题,https://www.hizero.cn/help/faq/f100/,public_web,2744,success
+ecommerce,京东售后政策自营,https://help.jd.com/user/issue/list-112.html,public_web,1708,success
+ecommerce,京东售后常见问题,https://help.jd.com/user/issue/list-115.html,public_web,1395,success
+ecommerce,三星商城退换货适用条件,https://www.samsung.com.cn/shop-faq/after-sale/what-conditions-apply-to-returns-and-exchanges/,public_web,3892,success
+ecommerce,网络购买商品七日无理由退货暂行办法,https://www.gov.cn/zhengce/zhengceku/2020-11/03/content_5557118.htm,public_web,8305,success
+hr,中国就业网人社日课,https://chinajob.mohrss.gov.cn/h5/c/2021-06-04/308283.shtml,public_web,40531,success
+hr,中华人民共和国劳动合同法,http://www.npc.gov.cn/zgrdw/npc/xinwen/lfgz/zxfl/2007-06/29/content_368169.htm,public_web,11427,success
+property,鄂尔多斯物业服务常见问题答疑,https://zjj.ordos.gov.cn/hdjl/zcwd/202402/t20240218_3573119.html,public_web,4923,success
+property,上海物业费构成详解,https://www.shanghai.gov.cn/nw17239/20251022/01b68dca140a4ccfa298e742460f19e2.html,public_web,2491,success
+property,上海市房屋管理局物业费构成详解,https://fgj.sh.gov.cn/gzdt/20251022/896acc6875354f1990d9f2e8297cbb2e.html,public_web,2525,success
+hr,赣州市劳动者入职指引,http://www.rsj.ganzhou.gov.cn/c101392/202603/fc123d347398402d808e04fdf44a6ec4.shtml,public_web,0,failed: HTTPError: HTTP Error 503: Service Unavailable

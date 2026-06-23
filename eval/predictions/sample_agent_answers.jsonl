@@ -1,0 +1,2 @@
+{"scene":"demo","query":"退货要注意什么？","answer":"消费者应及时退回商品，并保留退货凭证。[1]","expected_keywords":["退回商品","退货凭证"]}
+{"scene":"demo","query":"能不能退虚拟商品？","answer":"抱歉，当前知识库中没有检索到足够相关的资料，暂时无法准确回答这个问题。","expected_keywords":["虚拟商品"]}

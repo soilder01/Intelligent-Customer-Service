@@ -1,0 +1,5 @@
+{"scene":"zhisaotong","query":"机器人清洁时声音变大一般怎么排查？","expected_keywords":["吸力","地毯","异物","清洁"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"zhisaotong","query":"洗地机自清洁后污水仍然很脏怎么办？","expected_keywords":["自清洁","清洁滚筒","重复","污水箱"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"zhisaotong","query":"毛刷滚筒多久需要清理一次？","expected_keywords":["每周","毛刷滚筒","清洁"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"zhisaotong","query":"清洁滚筒大概多久更换一次？","expected_keywords":["6-18个月","更换","清洁滚筒"],"source_hint":"public_knowledge_seed.txt"}
+{"scene":"zhisaotong","query":"机器人待机时有轻微声音是否一定是故障？","expected_keywords":["待机","轻微","正常"],"source_hint":"public_knowledge_seed.txt"}

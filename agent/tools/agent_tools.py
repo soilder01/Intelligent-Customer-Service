@@ -44,13 +44,13 @@ def _get_public_ip() -> str:
 
     return ""
 
-GAODE_BASE_URL = agent_conf.get("gaode_base_url")
-GAODE_TIMEOUT = float(agent_conf.get("gaode_timeout"))
+GAODE_BASE_URL = os.getenv("GAODE_BASE_URL", agent_conf.get("gaode_base_url", "https://restapi.amap.com"))
+GAODE_TIMEOUT = float(os.getenv("GAODE_TIMEOUT", agent_conf.get("gaode_timeout", 5)))
 
 def _gaode_get(path: str, params: dict) -> dict:
-    gaode_key = (agent_conf.get("gaodekey") or "").strip()
-    if not gaode_key:
-        raise ValueError("agent.yml中未配置gaodekey")
+    gaode_key = (os.getenv("GAODE_API_KEY") or agent_conf.get("gaodekey") or "").strip()
+    if not gaode_key or gaode_key in {"你的高德key!", "your_gaode_api_key"}:
+        raise ValueError("未配置GAODE_API_KEY环境变量")
 
     query = dict(params)
     query["key"] = gaode_key
