@@ -1,7 +1,8 @@
 import type { ChatMessage, ChatResponse, DashboardSummary, EvalSample, ReviewItem, SceneConfig, SceneId, TraceEvent } from '../types';
 import { dashboard, initialMessages, reviews, samples, scenes, traces } from '../mockData';
 
-const API_BASE = import.meta.env.VITE_AGENT_API_BASE as string | undefined;
+const API_BASE = (import.meta.env.VITE_AGENT_API_BASE as string | undefined) ?? '';
+const USE_MOCK_API = API_BASE === 'mock';
 
 const sceneGradients: Record<SceneId, [string, string]> = {
   zhisaotong: ['#22d3ee', '#6366f1'],
@@ -64,7 +65,7 @@ function normalizeDashboard(raw: unknown): DashboardSummary {
 }
 
 async function getJson<T>(path: string, fallback: T, normalize?: (raw: unknown) => T): Promise<T> {
-  if (!API_BASE) return fallback;
+  if (USE_MOCK_API) return fallback;
   try {
     const response = await fetch(`${API_BASE}${path}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -76,7 +77,7 @@ async function getJson<T>(path: string, fallback: T, normalize?: (raw: unknown) 
 }
 
 async function postJson<T>(path: string, body: unknown, fallback: T): Promise<T> {
-  if (!API_BASE) return fallback;
+  if (USE_MOCK_API) return fallback;
   try {
     const response = await fetch(`${API_BASE}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
