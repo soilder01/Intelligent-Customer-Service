@@ -859,3 +859,41 @@ VITE_AGENT_API_BASE=http://localhost:8000 npm run dev
 ```
 
 当前 API 覆盖场景配置、生产质量看板、消息初始态、任务轨迹、复核队列、评测样本和 Chat 调用。`POST /api/chat` 会调用现有 `ReactAgent`，并保留高风险动作确认返回。
+
+
+---
+
+## 交付启动速查
+
+### 本地一键开发模式
+
+```bash
+cp .env.example .env
+python scripts/start_local.py
+```
+
+访问：
+
+- 前端：`http://localhost:5173/`
+- 后端：`http://localhost:8000/api/health`
+
+> 不要在浏览器中打开 `0.0.0.0:5173` 或 `0.0.0.0:8000`。`0.0.0.0` 只是服务监听地址，本机访问请用 `localhost`。
+
+### Docker Compose 演示模式
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+访问：
+
+- 前端：`http://localhost:5173/`
+- API：`http://localhost:8000/api/health`
+
+### Demo / Live 模式
+
+- 未配置 `DASHSCOPE_API_KEY`：后端进入 Demo Mode，返回稳定模拟回答、执行轨迹和质量看板，适合演示。
+- 已配置 `DASHSCOPE_API_KEY`：后端进入 Live Mode，调用真实 Agent/RAG/工具治理链路。
+
+详细说明见：[`docs/DELIVERY.md`](docs/DELIVERY.md)

@@ -1,0 +1,27 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file:
+      - .env
+    environment:
+      AGENT_REQUIRE_CONFIRMATION: ${AGENT_REQUIRE_CONFIRMATION:-false}
+      AGENT_ENFORCE_TOOL_POLICY: ${AGENT_ENFORCE_TOOL_POLICY:-true}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./eval/datasets:/app/eval/datasets
+      - ./data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_AGENT_API_BASE: /api
+    depends_on:
+      - api
+    ports:
+      - "5173:80"

@@ -60,3 +60,30 @@ VITE_AGENT_API_BASE=http://localhost:8000 npm run dev
 - `POST /api/chat`
 
 前端未配置 `VITE_AGENT_API_BASE` 时继续使用 mock fallback；配置后会优先调用 Python Agent API。
+
+
+## Demo / Live 模式
+
+- 默认开发模式使用同源 `/api`，由 Vite proxy 转发到 `http://127.0.0.1:8000`。
+- 如果希望完全不依赖后端，可使用：
+
+```bash
+VITE_AGENT_API_BASE=mock npm run dev
+```
+
+- 如果通过外部 API 地址联调，可使用：
+
+```bash
+VITE_AGENT_API_BASE=http://localhost:8000 npm run dev
+```
+
+## Docker 预览
+
+根目录已提供 `docker-compose.yml`，前端镜像内置 Nginx，将 `/api/` 代理到 FastAPI：
+
+```bash
+cd ..
+docker compose up --build
+```
+
+访问 `http://localhost:5173/`。
