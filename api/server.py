@@ -1,6 +1,9 @@
 """FastAPI backend for the independent React Agent workbench."""
 from __future__ import annotations
 
+import os
+import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -8,6 +11,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from utils.agent_workflow import required_confirmation
 from utils.config_handler import get_all_scenes, get_scene_by_id
 from utils.production_loop import build_production_dashboard, list_eval_samples, list_review_items
 from utils.task_store import list_recent_task_runs, load_task_run
@@ -24,6 +28,31 @@ class ChatResponse(BaseModel):
     task_id: str | None = None
     events: list[dict[str, Any]] = []
     requires_confirmation: dict[str, str] | None = None
+    mode: str = "live"
+
+
+def model_key_configured() -> bool:
+    return bool(os.getenv("DASHSCOPE_API_KEY"))
+
+
+def build_demo_chat_response(request: ChatRequest, scene: dict[str, Any]) -> ChatResponse:
+    task_id = f"demo-{int(time.time() * 1000)}"
+    now = datetime.now().isoformat(timespec="seconds")
+    scene_name = scene.get("name") or request.scene_id
+    answer = (
+        f"当前处于 Demo 模式，已模拟执行「{scene_name}」场景任务：{request.message}\n\n"
+        "真实模型 Key 配置后，该入口会调用 ReactAgent、RAG 检索和工具治理链路，并返回真实回答与任务轨迹。"
+    )
+    return ChatResponse(
+        answer=answer,
+        task_id=task_id,
+        mode="demo",
+        events=[
+            {"time": now, "stage": "demo_request_received", "detail": request.message[:120], "risk": "low"},
+            {"time": now, "stage": "demo_agent_planned", "detail": f"绑定场景：{scene_name}", "risk": "low"},
+            {"time": now, "stage": "demo_response_ready", "detail": "无 DASHSCOPE_API_KEY，返回可测模拟结果", "risk": "medium"},
+        ],
+    )
 
 
 def create_app() -> FastAPI:
@@ -37,8 +66,15 @@ def create_app() -> FastAPI:
     )
 
     @app.get("/api/health")
-    def health() -> dict[str, str]:
-        return {"status": "ok"}
+    def health() -> dict[str, Any]:
+        configured = model_key_configured()
+        return {
+            "status": "ok",
+            "mode": "live" if configured else "demo",
+            "api_online": True,
+            "model_key_configured": configured,
+            "generated_at": datetime.now().isoformat(timespec="seconds"),
+        }
 
     @app.get("/api/scenes")
     def scenes() -> list[dict[str, Any]]:
@@ -70,18 +106,33 @@ def create_app() -> FastAPI:
 
     @app.post("/api/chat")
     def chat(request: ChatRequest) -> ChatResponse:
-        from agent.react_agent import ReactAgent
-
-        scene = get_scene_by_id(request.scene_id) or (get_all_scenes()[0] if get_all_scenes() else {"id": request.scene_id})
-        agent = ReactAgent(scene_config=scene)
-        confirmation = agent.get_required_confirmation(request.message)
+        scenes_data = get_all_scenes()
+        scene = get_scene_by_id(request.scene_id) or (scenes_data[0] if scenes_data else {"id": request.scene_id, "tools": []})
+        enabled_tools = scene.get("tools") or []
+        confirmation = required_confirmation(request.message, enabled_tools)
         if confirmation and confirmation.action not in request.confirmed_actions:
             return ChatResponse(
                 answer="该操作需要人工确认后继续。",
+                mode="live" if model_key_configured() else "demo",
                 requires_confirmation={"action": confirmation.action, "title": confirmation.title, "reason": confirmation.reason},
             )
-        answer = "".join(agent.execute_stream(request.message, confirmed_actions=request.confirmed_actions))
-        return ChatResponse(answer=answer, task_id=agent.get_last_task_id(), events=agent.get_last_task_events())
+
+        if not model_key_configured():
+            return build_demo_chat_response(request, scene)
+
+        try:
+            from agent.react_agent import ReactAgent
+
+            agent = ReactAgent(scene_config=scene)
+            answer = "".join(agent.execute_stream(request.message, confirmed_actions=request.confirmed_actions))
+            return ChatResponse(answer=answer, task_id=agent.get_last_task_id(), events=agent.get_last_task_events(), mode="live")
+        except Exception as exc:
+            now = datetime.now().isoformat(timespec="seconds")
+            return ChatResponse(
+                answer="真实 Agent 执行失败，已返回可观测错误信息。请检查模型 Key、依赖和后端日志后重试。",
+                mode="error",
+                events=[{"time": now, "stage": "live_agent_failed", "detail": f"{type(exc).__name__}: {str(exc)[:160]}", "risk": "high"}],
+            )
 
     return app
 

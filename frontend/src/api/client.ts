@@ -1,8 +1,10 @@
-import type { ChatMessage, ChatResponse, DashboardSummary, EvalSample, ReviewItem, SceneConfig, SceneId, TraceEvent } from '../types';
+import type { ChatMessage, ChatResponse, DashboardSummary, EvalSample, HealthStatus, ReviewItem, SceneConfig, SceneId, TraceEvent } from '../types';
 import { dashboard, initialMessages, reviews, samples, scenes, traces } from '../mockData';
 
 const API_BASE = (import.meta.env.VITE_AGENT_API_BASE as string | undefined) ?? '';
 const USE_MOCK_API = API_BASE === 'mock';
+
+const mockHealth: HealthStatus = { status: 'ok', mode: 'demo', apiOnline: false, modelKeyConfigured: false };
 
 const sceneGradients: Record<SceneId, [string, string]> = {
   zhisaotong: ['#22d3ee', '#6366f1'],
@@ -13,12 +15,17 @@ const sceneGradients: Record<SceneId, [string, string]> = {
 
 function normalizeScene(raw: Partial<SceneConfig>): SceneConfig {
   const id = (raw.id || 'zhisaotong') as SceneId;
+  return { id, name: raw.name || id, description: raw.description || '', tools: raw.tools || [], gradient: raw.gradient || sceneGradients[id] || ['#22d3ee', '#6366f1'] };
+}
+
+function normalizeHealth(raw: unknown): HealthStatus {
+  const source = raw as { status?: string; mode?: 'demo' | 'live'; api_online?: boolean; apiOnline?: boolean; model_key_configured?: boolean; modelKeyConfigured?: boolean; generated_at?: string; generatedAt?: string };
   return {
-    id,
-    name: raw.name || id,
-    description: raw.description || '',
-    tools: raw.tools || [],
-    gradient: raw.gradient || sceneGradients[id] || ['#22d3ee', '#6366f1'],
+    status: source.status || 'ok',
+    mode: source.mode || 'demo',
+    apiOnline: source.apiOnline ?? source.api_online ?? true,
+    modelKeyConfigured: source.modelKeyConfigured ?? source.model_key_configured ?? false,
+    generatedAt: source.generatedAt || source.generated_at,
   };
 }
 
@@ -26,41 +33,13 @@ function normalizeDashboard(raw: unknown): DashboardSummary {
   const source = raw as {
     reviews?: { total?: number; open?: number; high_risk?: number; highRisk?: number };
     samples?: { total?: number; labeled?: number; unlabeled?: number; label_rate?: number; labelRate?: number };
-    datasets?: {
-      seed_cases?: number;
-      seedCases?: number;
-      reviewed_cases?: number;
-      reviewedCases?: number;
-      total_cases?: number;
-      totalCases?: number;
-      by_scene?: Record<string, { seed_cases?: number; reviewed_cases?: number; total_cases?: number }>;
-      byScene?: DashboardSummary['datasets']['byScene'];
-    };
+    datasets?: { seed_cases?: number; seedCases?: number; reviewed_cases?: number; reviewedCases?: number; total_cases?: number; totalCases?: number; by_scene?: Record<string, { seed_cases?: number; reviewed_cases?: number; total_cases?: number }>; byScene?: DashboardSummary['datasets']['byScene'] };
   };
-  const datasetByScene = source.datasets?.byScene || Object.fromEntries(
-    Object.entries(source.datasets?.by_scene || {}).map(([scene, stats]) => [
-      scene,
-      { seedCases: stats.seed_cases || 0, reviewedCases: stats.reviewed_cases || 0, totalCases: stats.total_cases || 0 },
-    ]),
-  );
+  const datasetByScene = source.datasets?.byScene || Object.fromEntries(Object.entries(source.datasets?.by_scene || {}).map(([scene, stats]) => [scene, { seedCases: stats.seed_cases || 0, reviewedCases: stats.reviewed_cases || 0, totalCases: stats.total_cases || 0 }]));
   return {
-    reviews: {
-      total: source.reviews?.total || 0,
-      open: source.reviews?.open || 0,
-      highRisk: source.reviews?.highRisk || source.reviews?.high_risk || 0,
-    },
-    samples: {
-      total: source.samples?.total || 0,
-      labeled: source.samples?.labeled || 0,
-      unlabeled: source.samples?.unlabeled || 0,
-      labelRate: source.samples?.labelRate || source.samples?.label_rate || 0,
-    },
-    datasets: {
-      seedCases: source.datasets?.seedCases || source.datasets?.seed_cases || 0,
-      reviewedCases: source.datasets?.reviewedCases || source.datasets?.reviewed_cases || 0,
-      totalCases: source.datasets?.totalCases || source.datasets?.total_cases || 0,
-      byScene: datasetByScene,
-    },
+    reviews: { total: source.reviews?.total || 0, open: source.reviews?.open || 0, highRisk: source.reviews?.highRisk || source.reviews?.high_risk || 0 },
+    samples: { total: source.samples?.total || 0, labeled: source.samples?.labeled || 0, unlabeled: source.samples?.unlabeled || 0, labelRate: source.samples?.labelRate || source.samples?.label_rate || 0 },
+    datasets: { seedCases: source.datasets?.seedCases || source.datasets?.seed_cases || 0, reviewedCases: source.datasets?.reviewedCases || source.datasets?.reviewed_cases || 0, totalCases: source.datasets?.totalCases || source.datasets?.total_cases || 0, byScene: datasetByScene },
   };
 }
 
@@ -82,18 +61,19 @@ async function postJson<T>(path: string, body: unknown, fallback: T): Promise<T>
     const response = await fetch(`${API_BASE}${path}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const raw = await response.json();
-    return { answer: raw.answer, taskId: raw.task_id, events: raw.events, requiresConfirmation: raw.requires_confirmation } as T;
+    return { answer: raw.answer, taskId: raw.task_id, events: raw.events, requiresConfirmation: raw.requires_confirmation, mode: raw.mode } as T;
   } catch {
     return fallback;
   }
 }
 
 export const api = {
+  health: () => getJson<HealthStatus>('/api/health', mockHealth, normalizeHealth),
   scenes: () => getJson<SceneConfig[]>('/api/scenes', scenes, (raw) => (raw as Partial<SceneConfig>[]).map(normalizeScene)),
   dashboard: () => getJson<DashboardSummary>('/api/dashboard', dashboard, normalizeDashboard),
   messages: () => getJson<ChatMessage[]>('/api/messages', initialMessages),
   traces: () => getJson<TraceEvent[]>('/api/traces', traces),
   reviews: () => getJson<ReviewItem[]>('/api/reviews', reviews),
   samples: () => getJson<EvalSample[]>('/api/samples', samples),
-  chat: (sceneId: string, message: string, confirmedActions: string[] = []) => postJson<ChatResponse>('/api/chat', { scene_id: sceneId, message, confirmed_actions: confirmedActions }, { answer: `已收到「${message}」。当前使用 mock fallback，配置 VITE_AGENT_API_BASE 后将调用 Python Agent API。`, events: [] }),
+  chat: (sceneId: string, message: string, confirmedActions: string[] = []) => postJson<ChatResponse>('/api/chat', { scene_id: sceneId, message, confirmed_actions: confirmedActions }, { answer: `已收到「${message}」。当前为 Demo fallback，后端不可用时会用该结果保持页面可演示。`, events: [], mode: 'demo' }),
 };

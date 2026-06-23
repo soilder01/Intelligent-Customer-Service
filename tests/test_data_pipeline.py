@@ -1,3 +1,4 @@
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -547,6 +548,27 @@ class ApiServerTests(unittest.TestCase):
         self.assertIn("/api/scenes", routes)
         self.assertIn("/api/dashboard", routes)
         self.assertIn("/api/chat", routes)
+
+    def test_chat_endpoint_supports_demo_mode_without_model_key(self):
+        from fastapi.testclient import TestClient
+
+        original_key = os.environ.pop("DASHSCOPE_API_KEY", None)
+        try:
+            client = TestClient(create_app())
+            health = client.get("/api/health").json()
+            self.assertEqual(health["mode"], "demo")
+            self.assertFalse(health["model_key_configured"])
+
+            chat = client.post("/api/chat", json={"scene_id": "zhisaotong", "message": "你好"}).json()
+            self.assertEqual(chat["mode"], "demo")
+            self.assertIn("Demo 模式", chat["answer"])
+            self.assertTrue(chat["events"])
+
+            confirmation = client.post("/api/chat", json={"scene_id": "zhisaotong", "message": "生成使用报告"}).json()
+            self.assertEqual(confirmation["requires_confirmation"]["action"], "fetch_external_data")
+        finally:
+            if original_key is not None:
+                os.environ["DASHSCOPE_API_KEY"] = original_key
 
 
 class PreflightTests(unittest.TestCase):
