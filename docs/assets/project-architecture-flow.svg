@@ -1,0 +1,161 @@
+<svg width="1600" height="980" viewBox="0 0 1600 980" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">多场景智能 Agent 平台全局架构与流程图</title>
+  <desc id="desc">展示 React 前端、FastAPI API、Agentic Workflow、Tool Registry、RAG、Chroma、评测质量门禁、生产复核闭环和 Docker 交付链路。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="980" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#07111f"/>
+      <stop offset="0.45" stop-color="#0e1b35"/>
+      <stop offset="1" stop-color="#140b2f"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14284c" stop-opacity="0.96"/>
+      <stop offset="1" stop-color="#10182f" stop-opacity="0.92"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#4de7ff"/>
+      <stop offset="1" stop-color="#7c5cff"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#7df7bf"/>
+      <stop offset="1" stop-color="#2dd4bf"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ffd166"/>
+      <stop offset="1" stop-color="#ff7a59"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.1 0 0 0 0 0.75 0 0 0 0 1 0 0 0 0.45 0"/>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity="0.32"/>
+    </filter>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2 2 L12 7 L2 12 Z" fill="#67e8f9"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto" markerUnits="strokeWidth">
+      <path d="M2 2 L12 7 L2 12 Z" fill="#7df7bf"/>
+    </marker>
+    <style>
+      .title{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;font-weight:800;fill:#f8fbff;letter-spacing:.5px}
+      .subtitle{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;font-weight:500;fill:#9fb7d8}
+      .label{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;font-weight:750;fill:#ffffff}
+      .small{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;font-size:24px;fill:#b8c7de}
+      .tiny{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;font-size:20px;fill:#91a4c2}
+      .chip{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',Arial,sans-serif;font-size:20px;font-weight:700;fill:#07111f}
+      .line{stroke:#67e8f9;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow);filter:url(#glow)}
+      .line2{stroke:#7df7bf;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrowGreen);filter:url(#glow)}
+      .dash{stroke:#7c8aa6;stroke-width:3;stroke-dasharray:9 12;stroke-linecap:round;opacity:.75}
+    </style>
+  </defs>
+
+  <rect width="1600" height="980" rx="42" fill="url(#bg)"/>
+  <circle cx="200" cy="170" r="180" fill="#0ea5e9" opacity="0.12"/>
+  <circle cx="1370" cy="140" r="240" fill="#8b5cf6" opacity="0.12"/>
+  <circle cx="1210" cy="870" r="300" fill="#14b8a6" opacity="0.09"/>
+  <path d="M80 820 C340 700 455 900 700 760 S1150 640 1510 760" stroke="#334155" stroke-width="2" opacity="0.45"/>
+
+  <text x="92" y="86" class="title" font-size="48">多场景智能 Agent 平台</text>
+  <text x="94" y="128" class="subtitle" font-size="25">React + FastAPI + Agentic Workflow + RAG + 生产复核 / 评测闭环</text>
+  <rect x="1258" y="56" width="250" height="46" rx="23" fill="url(#cyan)" opacity="0.95"/>
+  <text x="1286" y="86" class="chip">Demo / Live 双模式交付</text>
+
+  <!-- Top clients -->
+  <g filter="url(#shadow)">
+    <rect x="92" y="190" width="330" height="132" rx="26" fill="url(#card)" stroke="#28537e" stroke-width="1.5"/>
+    <rect x="118" y="216" width="72" height="72" rx="20" fill="#0ea5e9" opacity="0.18"/>
+    <text x="136" y="263" font-size="34">🖥️</text>
+    <text x="210" y="243" class="label" font-size="27">React 运营前台</text>
+    <text x="210" y="280" class="small">质量看板 / 任务轨迹</text>
+    <text x="210" y="309" class="tiny">复核队列 · 样本补标 · 场景切换</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="92" y="374" width="330" height="122" rx="26" fill="url(#card)" stroke="#28537e" stroke-width="1.5"/>
+    <rect x="118" y="400" width="72" height="72" rx="20" fill="#8b5cf6" opacity="0.18"/>
+    <text x="136" y="447" font-size="34">📄</text>
+    <text x="210" y="428" class="label" font-size="27">Streamlit 兼容入口</text>
+    <text x="210" y="465" class="small">保留历史管理能力</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="502" y="238" width="286" height="168" rx="28" fill="url(#card)" stroke="#3b82f6" stroke-width="1.6"/>
+    <text x="536" y="284" class="label" font-size="30">FastAPI API 层</text>
+    <text x="536" y="324" class="small">/api/health · /chat</text>
+    <text x="536" y="354" class="small">/dashboard · /reviews</text>
+    <text x="536" y="384" class="tiny">CORS · Demo Mock · Live Agent</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="858" y="202" width="352" height="236" rx="32" fill="url(#card)" stroke="#22d3ee" stroke-width="1.8"/>
+    <text x="900" y="254" class="label" font-size="32">Agentic Workflow</text>
+    <text x="900" y="294" class="small">意图识别 · 状态推进 · 高风险确认</text>
+    <text x="900" y="331" class="small">任务轨迹 · 审计日志 · 失败恢复</text>
+    <rect x="900" y="358" width="264" height="44" rx="22" fill="#0f766e" opacity="0.35" stroke="#5eead4"/>
+    <text x="930" y="388" class="small">Human-in-the-loop</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="1278" y="214" width="246" height="200" rx="30" fill="url(#card)" stroke="#a78bfa" stroke-width="1.6"/>
+    <text x="1316" y="264" class="label" font-size="30">Tool Registry</text>
+    <text x="1316" y="304" class="small">工具元数据</text>
+    <text x="1316" y="334" class="small">权限域 / 风险级别</text>
+    <text x="1316" y="364" class="tiny">fetch_external_data 等</text>
+  </g>
+
+  <!-- Knowledge layer -->
+  <g filter="url(#shadow)">
+    <rect x="500" y="545" width="1018" height="210" rx="34" fill="#0d1930" stroke="#334155" stroke-width="1.6"/>
+    <text x="536" y="592" class="label" font-size="31">RAG 可信知识与场景隔离</text>
+    <text x="536" y="628" class="small">四类业务场景：智扫通客服 · 电商售后 · HR 助手 · 园区物业</text>
+
+    <rect x="536" y="656" width="198" height="64" rx="22" fill="#083344" stroke="#22d3ee"/>
+    <text x="574" y="696" class="small">公开语料 / FAQ</text>
+    <rect x="770" y="656" width="218" height="64" rx="22" fill="#1e1b4b" stroke="#818cf8"/>
+    <text x="808" y="696" class="small">Prompt / 场景配置</text>
+    <rect x="1024" y="656" width="176" height="64" rx="22" fill="#052e16" stroke="#4ade80"/>
+    <text x="1065" y="696" class="small">Chroma 向量库</text>
+    <rect x="1236" y="656" width="230" height="64" rx="22" fill="#431407" stroke="#fb923c"/>
+    <text x="1272" y="696" class="small">引用约束 / 拒答</text>
+  </g>
+
+  <!-- Quality loop -->
+  <g filter="url(#shadow)">
+    <rect x="92" y="586" width="330" height="250" rx="30" fill="url(#card)" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="132" y="636" class="label" font-size="30">生产质量闭环</text>
+    <text x="132" y="682" class="small">1. 真实问题自动沉淀</text>
+    <text x="132" y="718" class="small">2. 人工复核与补标</text>
+    <text x="132" y="754" class="small">3. 导出 reviewed 数据集</text>
+    <text x="132" y="790" class="small">4. 回归评测质量门禁</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="552" y="820" width="404" height="96" rx="26" fill="#0b2f2a" stroke="#2dd4bf" stroke-width="1.6"/>
+    <text x="590" y="858" class="label" font-size="28">评测流水线 / Preflight</text>
+    <text x="590" y="894" class="small">单测 · 编译 · 关键词覆盖 · 检索命中 · 密钥扫描</text>
+  </g>
+
+  <g filter="url(#shadow)">
+    <rect x="1040" y="820" width="478" height="96" rx="26" fill="#25164a" stroke="#a78bfa" stroke-width="1.6"/>
+    <text x="1080" y="858" class="label" font-size="28">交付运行</text>
+    <text x="1080" y="894" class="small">Docker Compose · 本地一键启动 · Nginx /api 代理</text>
+  </g>
+
+  <!-- Flow lines -->
+  <path class="line" d="M422 256 C455 256 462 322 502 322"/>
+  <path class="line" d="M422 435 C458 435 462 344 502 344"/>
+  <path class="line" d="M788 322 C820 322 824 320 858 320"/>
+  <path class="line" d="M1210 320 C1238 320 1248 314 1278 314"/>
+  <path class="line" d="M1034 438 C1034 484 1016 502 1010 545"/>
+  <path class="line" d="M858 376 C760 456 650 496 618 545"/>
+  <path class="line2" d="M1010 755 C1008 790 892 802 830 820"/>
+  <path class="line2" d="M552 868 C500 868 444 776 422 748"/>
+  <path class="line2" d="M422 648 C464 610 490 596 500 590"/>
+  <path class="dash" d="M1256 755 C1260 782 1274 800 1290 820"/>
+
+  <!-- Bottom legend -->
+  <rect x="94" y="908" width="348" height="34" rx="17" fill="#082f49" stroke="#38bdf8" opacity="0.85"/>
+  <text x="116" y="932" class="tiny">面向演示：无 Key 可 Demo；配置 DASHSCOPE_API_KEY 即 Live</text>
+  <text x="1232" y="946" class="tiny">README 顶部总览 · docs/assets/project-architecture-flow.svg</text>
+</svg>

@@ -1,5 +1,13 @@
+<p align="center">
+  <img src="docs/assets/project-cover-image2.png" alt="多场景智能 Agent 平台 Image2 顶部展示图" width="100%" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/project-architecture-flow.svg" alt="多场景智能 Agent 平台全局架构与流程图" width="100%" />
+</p>
+
 # 多场景智能Agent平台 🤖
-> 基于 LangChain ReAct Agent + RAG + Streamlit 的**一键切换多场景智能Agent平台**，原生支持扫地机器人客服、电商售后、HR助手、园区物业等业务场景，开箱即用，10分钟即可完成新场景上线。
+> 基于 React + FastAPI + LangChain/LangGraph Agent + RAG + 生产质量闭环的**多场景智能 Agent 平台**，原生支持扫地机器人客服、电商售后、HR助手、园区物业等业务场景；支持 Demo/Live 双模式、工具治理、人机确认、任务轨迹、复核补标、评测质量门禁与 Docker 化交付。
 
 ---
 # 使用必看
@@ -11,17 +19,16 @@
 ---
 
 ## 📖 项目简介
-**多场景智能Agent平台**是一款可灵活扩展的企业级AI智能体应用，从单一场景的扫地机器人客服，升级为配置化多场景Agent平台。系统以 Streamlit 构建轻量级前端网页，后端基于 LangChain 搭建 ReAct（Reasoning + Acting）Agent，整合以下核心能力：
+**多场景智能 Agent 平台**是一款面向企业客服、运营复核和评测闭环的现代化 Agent 应用。项目已从原有单一 Streamlit Demo 升级为 **React 运营前台 + FastAPI API 层 + LangChain/LangGraph Agent + RAG 可信知识库 + 生产质量闭环** 的工程化原型，同时保留 Streamlit 作为兼容入口。
 
-- **多场景一键切换**：前端下拉框一键切换业务场景，场景级Prompt、向量库、工具列表完全隔离，无知识串扰
-- **管理员在线知识库管理**：支持前端在线上传知识库文件，MD5自动去重，向量库热更新，无需重启服务
-- **场景级权限隔离**：普通用户仅可使用开放场景，仅管理员可上传/管理对应场景的知识库
-- **RAG 增强检索**：将产品手册、常见问题、制度规范等文档向量化存储，AI 回答时优先检索对应场景知识库，确保答案准确可靠
-- **高德地图服务**：调用高德地图 API 实时获取用户定位与天气信息，可按需配置到对应场景
-- **总结汇报模式**：中间件通过识别特定意图，动态切换系统提示词，自动生成场景化使用情况报告（Markdown 格式）
-- **多轮工具调用**：Agent 可自主规划并多轮调用所配备的工具，直至满足用户需求
-- **流式响应**：最终结果在网页端以逐字流式方式呈现，提升交互体验
-- **完善的日志与历史**：配备结构化日志（文件 + 控制台）与对话历史记录
+- **现代化前端体验**：独立 Vite + React + TypeScript 前端，集成场景切换、Chat、质量看板、任务轨迹、人工复核、样本补标和导出入口
+- **FastAPI 后端 API**：提供 `/api/health`、`/api/chat`、`/api/dashboard`、`/api/reviews`、`/api/samples` 等接口，支持前后端解耦联调
+- **Demo / Live 双模式**：未配置 `DASHSCOPE_API_KEY` 时可稳定演示；配置后切换到真实模型、RAG 与工具调用链路
+- **Agentic Workflow**：支持任务状态推进、工具审计、高风险动作识别、人机确认和可回放任务轨迹
+- **Tool Registry 工具治理**：以工具元数据、权限域、风险等级和审计策略控制工具启用与确认逻辑
+- **RAG 可信引用**：按场景隔离知识库、Prompt 与向量集合，要求关键结论可追溯，证据不足时拒答
+- **生产运营闭环**：真实问题自动沉淀为复核项和评测样本，支持人工补标、reviewed 数据集导出和回归评测
+- **质量门禁与交付**：内置单测、编译检查、关键词覆盖、检索命中、密钥扫描、Docker Compose 和本地一键启动脚本
 
 ---
 
@@ -30,57 +37,36 @@
 | 特性 | 说明 |
 |------|------|
 | **多场景支持** | 配置化定义业务场景，原生支持智扫通客服、电商售后、HR助手、园区物业 |
-| **场景级隔离** | 每个场景独立Prompt、独立向量库集合、独立知识库目录、独立工具列表 |
-| **LLM** | 阿里云通义千问 `qwen3-max`（通过 `ChatTongyi`） |
-| **Embedding** | 阿里云 DashScope `text-embedding-v4` |
-| **向量数据库** | Chroma（本地持久化，支持多集合隔离） |
-| **Agent 框架** | LangChain ReAct Agent + LangGraph |
-| **前端** | Streamlit Web 界面，支持场景切换、对话历史 |
-| **外部服务** | 高德地图 REST API（天气、IP 定位） |
-| **动态提示词** | 中间件根据上下文信号量自动切换 System Prompt |
-| **去重机制** | 场景级MD5 哈希追踪已处理文档，避免重复入库 |
-| **在线知识库管理** | 管理员前端在线上传文件，向量库热更新，无需重启 |
-| **日志** | 按天分文件，同时输出到控制台与文件 |
+| **前端体验** | React 运营前台负责 Chat、质量看板、任务轨迹、人工复核、样本补标；Streamlit 保留为兼容入口 |
+| **API 层** | FastAPI 提供健康检查、场景配置、对话、看板、复核队列、样本管理和 reviewed 导出接口 |
+| **Agent 框架** | LangChain ReAct Agent + LangGraph，叠加 Agentic Workflow、任务状态推进和高风险确认 |
+| **工具治理** | Tool Registry 统一描述工具权限域、参数 Schema、风险等级和审计策略 |
+| **RAG 可信知识库** | Chroma 本地持久化，多场景集合隔离；回答要求引用证据，证据不足时拒答 |
+| **生产质量闭环** | 运行轨迹 → 人工复核 → 样本补标 → reviewed 数据集导出 → 评测质量门禁 |
+| **Demo / Live 双模式** | 无模型 Key 可稳定演示；配置 `DASHSCOPE_API_KEY` 后调用真实模型、Embedding 和工具链路 |
+| **交付方式** | 支持本地一键启动、Docker Compose、Nginx `/api` 反向代理和 preflight 收口检查 |
+| **安全约束** | `.env` 管理敏感配置，内置 token-like 密钥扫描，避免 Key 写入仓库 |
 
 ---
 
 ## 🏗 系统架构
 
-```
-┌──────────────────────────────────────────────────────────┐
-│          Streamlit 前端 (app.py)                          │
-│  - 场景切换下拉框  - 对话历史  - 流式显示  - 会话状态管理 │
-└──────────────────────┬───────────────────────────────────┘
-                       │
-┌──────────────────────▼───────────────────────────────────┐
-│        多场景 ReAct Agent (agent/react_agent.py)          │
-│  ┌─────────────────────────────────────────────────────┐ │
-│  │  中间件层 (middleware.py)                            │ │
-│  │  ├─ monitor_tool   工具调用监控与日志                │ │
-│  │  ├─ log_before_model  模型调用前日志                 │ │
-│  │  └─ report_prompt_switch 动态提示词切换              │ │
-│  └─────────────────────────────────────────────────────┘ │
-│  场景级工具集：rag_summarize / get_weather /              │
-│         get_user_location / get_user_id /                 │
-│         get_current_month / fetch_external_data            │
-│         fill_context_for_report（按需配置）                │
-└──┬──────────────┬───────────────┬────────────────────────┘
-   │              │               │
-   ▼              ▼               ▼
-┌──────────┐ ┌─────────────┐ ┌────────────────┐
-│ 多场景   │ │  高德 API   │ │  外部 CSV 数据 │
-│ RAG 服务 │ │ 天气 / 定位 │ │ data/external/ │
-│(rag/)    │ └─────────────┘ └────────────────┘
-└────┬─────┘
-     │
-┌────▼──────────────────────────────────────┐
-│  Chroma 向量数据库 (chroma_db/)            │
-│  多集合隔离：zhisaotong / ecommerce / hr   │
-│  Embedding: text-embedding-v4              │
-│  场景级知识库目录：data/zhisaotong/ 等     │
-│  ├─ PDF / TXT 文档                         │
-│  └─ chunk_size=200, k=3                    │
-└────────────────────────────────────────────┘
+README 顶部已放置两张展示图：
+
+1. `docs/assets/project-cover-image2.png`：使用 image2 模型生成的项目展示封面图。
+2. `docs/assets/project-architecture-flow.svg`：用于准确表达真实工程链路的全局架构与流程图，覆盖 React 前台、FastAPI、Agentic Workflow、Tool Registry、RAG、Chroma、生产复核、评测门禁和 Docker 交付。
+
+核心链路可以概括为：
+
+```text
+React / Streamlit 入口
+  → FastAPI API 层
+  → Agentic Workflow + Tool Registry
+  → RAG 可信知识库 / 外部工具
+  → 任务轨迹与审计日志
+  → 人工复核与样本补标
+  → reviewed 数据集与评测质量门禁
+  → Demo / Live / Docker Compose 交付
 ```
 
 ---
@@ -88,55 +74,33 @@
 ## 📂 目录结构
 
 ```
-zhisaotong-Agent/
-├── app.py                        # Streamlit 前端入口（含多场景切换、管理员权限）
+Intelligent-Customer-Service/
+├── frontend/                     # Vite + React + TypeScript 运营前台
+│   ├── src/components/           # Hero、Chat、质量看板、轨迹、复核、样本管理
+│   ├── src/api/client.ts         # FastAPI client，支持 mock / 同源 / 自定义 API_BASE
+│   ├── Dockerfile                # 前端 Nginx 静态交付镜像
+│   └── nginx.conf                # SPA fallback 与 /api 反向代理
+├── api/
+│   └── server.py                 # FastAPI API 层：health/chat/dashboard/reviews/samples
 ├── agent/
 │   ├── react_agent.py            # 多场景 ReAct Agent 核心逻辑
-│   └── tools/
-│       ├── agent_tools.py        # 工具函数定义
-│       └── middleware.py         # Agent 中间件
-├── rag/
-│   ├── rag_service.py            # 多场景 RAG 检索摘要服务
-│   └── vector_store.py           # 多场景 Chroma 向量库管理
-├── model/
-│   └── factory.py                # 模型工厂（LLM + Embedding）
-├── utils/
-│   ├── config_handler.py         # YAML 配置加载器（含多场景配置）
-│   ├── logger_handler.py         # 日志工具
-│   ├── prompt_loader.py          # 多场景提示词加载器
-│   ├── file_handler.py           # 文档加载（PDF/TXT）
-│   └── path_tool.py              # 路径工具
-├── config/
-│   ├── agent.yml                 # Agent 配置（高德 API Key 等）
-│   ├── rag.yml                   # 模型名称配置
-│   ├── chroma.yml                # 向量库配置
-│   ├── prompts.yml               # 提示词文件路径
-│   └── scenes.yml                # 多场景配置核心文件
-├── prompts/（需自己完善）
-│   ├── rag_summarize.txt         # 默认 RAG 摘要提示词
-│   ├── zhisaotong.txt            # 智扫通场景系统Prompt
-│   ├── zhisaotong_rag.txt        # 智扫通场景RAG Prompt
-│   ├── zhisaotong_report.txt     # 智扫通场景Report Prompt
-│   ├── ecommerce.txt              # 电商售后场景系统Prompt
-│   ├── ecommerce_rag.txt          # 电商售后场景RAG Prompt
-│   ├── hr.txt                     # HR助手场景系统Prompt
-│   ├── hr_rag.txt                 # HR助手场景RAG Prompt
-│   ├── property.txt               # 园区物业场景系统Prompt
-│   └── property_rag.txt           # 园区物业场景RAG Prompt
-├── data/（需自己完善）
-│   ├── external/
-│   │   └── records.csv           # 用户使用记录（外部数据）
-│   ├── zhisaotong/               # 智扫通场景知识库目录
-│   │   ├── 扫地机器人100问.pdf
-│   │   ├── 故障排除.txt
-│   │   └── .md5_store            # 场景独立MD5去重文件
-│   ├── ecommerce/                 # 电商售后场景知识库目录
-│   ├── hr/                        # HR助手场景知识库目录
-│   └── property/                  # 园区物业场景知识库目录
-├── chroma_db/                    # Chroma 持久化目录（自动生成，含多集合）
-├── logs/                         # 日志文件目录（自动生成）
-├── md5.text                      # 默认MD5去重记录
-└── requirements.txt
+│   └── tools/                    # 工具函数、中间件和工具调用治理
+├── rag/                          # RAG 检索、引用格式化和 Chroma 向量库管理
+├── utils/                        # Agentic Workflow、Tool Registry、审计、任务存储、生产闭环
+├── eval/                         # seed/reviewed 数据集、评测脚本和质量报告
+├── tests/                        # 数据、评测、API Demo Mode、生产闭环等单测
+├── scripts/                      # 数据采集、评测流水线、preflight、本地一键启动
+├── docs/
+│   ├── DELIVERY.md               # 本地 / Docker / Demo-Live 交付说明
+│   └── assets/                   # README 顶部展示图和全局架构流程图
+├── app.py                        # Streamlit 兼容入口
+├── config/                       # 场景、模型、RAG、Chroma、Prompt 配置
+├── prompts/                      # 多场景系统 Prompt / RAG Prompt / Report Prompt
+├── data/                         # 场景知识库、采集语料和外部数据
+├── Dockerfile.api                # FastAPI 后端镜像
+├── docker-compose.yml            # 前后端一体化演示环境
+├── .env.example                  # 环境变量样例，真实 Key 不入库
+└── requirements.txt              # Python 依赖
 ```
 
 ---
