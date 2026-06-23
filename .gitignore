@@ -8,15 +8,10 @@ __pycache__/
 .ruff_cache/
 .venv/
 venv/
-logs/*.log
-chroma_db/*
-!chroma_db/gitkeep
+logs/
+chroma_db/
 data/**/.md5_store
 .DS_Store
-logs/audit/
-logs/tasks/
-logs/review/
-logs/eval_samples/
 
 eval/reports/
 eval/predictions/pipeline_agent_answers.jsonl
