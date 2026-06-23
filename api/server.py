@@ -13,7 +13,14 @@ from pydantic import BaseModel
 
 from utils.agent_workflow import required_confirmation
 from utils.config_handler import get_all_scenes, get_scene_by_id
-from utils.production_loop import build_production_dashboard, list_eval_samples, list_review_items
+from utils.production_loop import (
+    build_production_dashboard,
+    export_labeled_eval_dataset,
+    label_eval_sample,
+    list_eval_samples,
+    list_review_items,
+    update_review_status,
+)
 from utils.task_store import list_recent_task_runs, load_task_run
 
 
@@ -29,6 +36,19 @@ class ChatResponse(BaseModel):
     events: list[dict[str, Any]] = []
     requires_confirmation: dict[str, str] | None = None
     mode: str = "live"
+
+
+class ReviewStatusRequest(BaseModel):
+    status: str
+
+
+class LabelSampleRequest(BaseModel):
+    expected_keywords: list[str]
+    note: str = ""
+
+
+class ExportDatasetRequest(BaseModel):
+    scene_id: str | None = None
 
 
 def model_key_configured() -> bool:
@@ -103,6 +123,29 @@ def create_app() -> FastAPI:
     @app.get("/api/samples")
     def samples() -> list[dict[str, Any]]:
         return list_eval_samples(limit=100, needs_labeling=None)
+
+    @app.post("/api/reviews/{review_id}/status")
+    def set_review_status(review_id: str, request: ReviewStatusRequest) -> dict[str, Any]:
+        try:
+            updated = update_review_status(review_id, request.status)
+            return {"ok": updated, "review_id": review_id, "status": request.status}
+        except ValueError as exc:
+            return {"ok": False, "review_id": review_id, "status": request.status, "error": str(exc)}
+
+    @app.post("/api/samples/{sample_id}/label")
+    def label_sample(sample_id: str, request: LabelSampleRequest) -> dict[str, Any]:
+        try:
+            path = label_eval_sample(sample_id, request.expected_keywords, request.note)
+            return {"ok": True, "sample_id": sample_id, "path": str(path)}
+        except ValueError as exc:
+            return {"ok": False, "sample_id": sample_id, "error": str(exc)}
+
+    @app.post("/api/datasets/export-reviewed")
+    def export_reviewed(request: ExportDatasetRequest) -> dict[str, Any]:
+        scene = request.scene_id
+        output = Path("eval") / "datasets" / (f"{scene}_reviewed.jsonl" if scene else "all_reviewed.jsonl")
+        path = export_labeled_eval_dataset(output, scene=scene)
+        return {"ok": True, "path": str(path), "scene": scene}
 
     @app.post("/api/chat")
     def chat(request: ChatRequest) -> ChatResponse:

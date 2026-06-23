@@ -58,5 +58,26 @@ export default function App() {
     if (pendingConfirmation && pendingMessage) void handleSend(pendingMessage, [pendingConfirmation.action]);
   };
 
-  return <div className="app-shell"><Sidebar scenes={scenes} current={currentScene} onSceneChange={setSceneId} /><main className="workspace"><div className={`status-bar ${health?.mode || 'offline'}`}><span>{health?.mode === 'live' ? 'Live Mode' : 'Demo Mode'}</span><b>{health?.apiOnline ? 'API Online' : 'API Offline'}</b><b>{health?.modelKeyConfigured ? 'Model Key Configured' : 'Model Key Missing'}</b></div><Hero scene={currentScene} /><QualityDashboard summary={dashboard} scene={currentScene} /><div className="work-grid"><ChatPanel scene={currentScene} messages={messages} onSend={handleSend} isSending={isSending} error={chatError} pendingConfirmation={pendingConfirmation} onConfirm={confirmPendingAction} /><div className="right-stack"><TraceTimeline events={events} /><ReviewQueue items={reviews.filter((item) => item.scene === sceneId)} /><SampleManager samples={samples.filter((sample) => sample.scene === sceneId)} /></div></div></main></div>;
+  const refreshOpsData = async () => {
+    const [dashboardData, reviewData, sampleData] = await Promise.all([api.dashboard(), api.reviews(), api.samples()]);
+    setDashboard(dashboardData); setReviews(reviewData); setSamples(sampleData);
+  };
+
+  const handleReviewStatus = async (reviewId: string, status: ReviewItem['status']) => {
+    await api.updateReviewStatus(reviewId, status);
+    await refreshOpsData();
+  };
+
+  const handleLabelSample = async (sampleId: string, keywords: string[]) => {
+    await api.labelSample(sampleId, keywords);
+    await refreshOpsData();
+  };
+
+  const handleExportReviewed = async (targetSceneId: SceneId) => {
+    const result = await api.exportReviewed(targetSceneId);
+    setMessages((prev) => [...prev, { role: 'assistant', content: `Reviewed 数据集已导出：${result.path || '已完成'}` }]);
+    await refreshOpsData();
+  };
+
+  return <div className="app-shell"><Sidebar scenes={scenes} current={currentScene} onSceneChange={setSceneId} /><main className="workspace"><div className={`status-bar ${health?.mode || 'offline'}`}><span>{health?.mode === 'live' ? 'Live Mode' : 'Demo Mode'}</span><b>{health?.apiOnline ? 'API Online' : 'API Offline'}</b><b>{health?.modelKeyConfigured ? 'Model Key Configured' : 'Model Key Missing'}</b></div><Hero scene={currentScene} /><QualityDashboard summary={dashboard} scene={currentScene} /><div className="work-grid"><ChatPanel scene={currentScene} messages={messages} onSend={handleSend} isSending={isSending} error={chatError} pendingConfirmation={pendingConfirmation} onConfirm={confirmPendingAction} /><div className="right-stack"><TraceTimeline events={events} /><ReviewQueue items={reviews.filter((item) => item.scene === sceneId)} onStatusChange={handleReviewStatus} /><SampleManager samples={samples.filter((sample) => sample.scene === sceneId)} sceneId={sceneId} onLabel={handleLabelSample} onExport={handleExportReviewed} /></div></div></main></div>;
 }
